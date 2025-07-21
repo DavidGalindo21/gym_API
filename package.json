@@ -1,0 +1,22 @@
+{
+  "name": "gym_corefit",
+  "version": "1.0.0",
+  "description": "API de administración de un gimnasio",
+  "keywords": [
+    "gimnasio"
+  ],
+  "license": "ISC",
+  "author": "DIGITAL DREAMERS",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^8.16.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
