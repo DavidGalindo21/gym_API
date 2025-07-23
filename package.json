@@ -10,7 +10,7 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "test": "nodemon server.js"
+    "dev": "nodemon server.js"
   },
   "dependencies": {
     "express": "^5.1.0",
