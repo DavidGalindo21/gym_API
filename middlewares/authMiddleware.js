@@ -21,6 +21,8 @@ export const verificarToken = async(req, res, next) => {
             id: usuario._id,
             rol: usuario.rol
         }
+        console.log('Header Authorization:', req.header('Authorization'));
+
         next()
 
   } catch (error) {
