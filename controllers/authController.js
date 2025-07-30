@@ -4,44 +4,56 @@ import bcrypt from "bcryptjs";
 import { userModel } from "../models/userModel.js";
 
 const SECRET_KEY = configuracion.SECRET_KEY;
-
 export const register = async (req, res) => {
     try {
-        const { telefono, nombre, correo, password, rol, coach } = req.body;
+        const { telefono, nombre, correo, password, rol = "user", coach } = req.body;
 
-        // Validar que el coach existe y tiene rol "coach"
-        if (coach) {
+        // Verificar si ya existe un usuario con ese correo
+        const existe = await userModel.findOne({ correo });
+        if (existe) return res.status(400).json({ error: 'El correo ya está registrado' });
+
+        let coachIdToSave = null;
+
+        // Lógica según el rol
+        if (rol === "user") {
+            // Si es rol "user", debe tener un coach válido
+            if (!coach) {
+                return res.status(400).json({ error: "El usuario con rol 'user' debe tener un coach asignado." });
+            }
+
             const coachExistente = await userModel.findOne({ _id: coach, rol: "coach" });
             if (!coachExistente) {
-                return res.status(400).json({ mensaje: "El coach asignado no existe o no es válido." });
+                return res.status(400).json({ error: "El coach asignado no existe o no es válido." });
             }
+
+            coachIdToSave = coachExistente._id;
+        } else {
+            // Si es admin o coach, no se guarda el campo "coach"
+            coachIdToSave = null;
         }
 
-        // verificar si ya existe
-        const existe = await userModel.findOne({correo})
-        if(existe) return res.status(400).json({error: 'El correo ya está registrado'})
+        // Encriptar contraseña
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-        // encriptar contraseña
-        const hashedPassword = await bcrypt.hash(password,10)
-
+        // Crear nuevo usuario
         const nuevoUsuario = new userModel({
             telefono,
             nombre,
             correo,
             password: hashedPassword,
-            rol: rol || "user",
-            coach: coach || ""
-        })
+            rol,
+            coach: coachIdToSave, // Será null si no corresponde
+        });
 
-        await nuevoUsuario.save()
+        await nuevoUsuario.save();
 
-        res.status(200).json({message: 'Usuario registrado exitosamente'})
+        res.status(200).json({ message: 'Usuario registrado exitosamente' });
 
     } catch (error) {
-        res.status(500).json({error: 'Error al registrar el usuario'})
-        console.error(error)
+        console.error(error);
+        res.status(500).json({ error: 'Error al registrar el usuario' });
     }
-}
+};
 
 export const login = async (req, res) => {
     try {

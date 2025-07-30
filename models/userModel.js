@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema({
     coach: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
+        default: null
     }
 })
 
