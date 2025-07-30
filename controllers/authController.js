@@ -7,7 +7,15 @@ const SECRET_KEY = configuracion.SECRET_KEY;
 
 export const register = async (req, res) => {
     try {
-        const { telefono, nombre, correo, password, rol } = req.body;
+        const { telefono, nombre, correo, password, rol, coach } = req.body;
+
+        // Validar que el coach existe y tiene rol "coach"
+        if (coach) {
+            const coachExistente = await userModel.findOne({ _id: coach, rol: "coach" });
+            if (!coachExistente) {
+                return res.status(400).json({ mensaje: "El coach asignado no existe o no es válido." });
+            }
+        }
 
         // verificar si ya existe
         const existe = await userModel.findOne({correo})
@@ -21,7 +29,8 @@ export const register = async (req, res) => {
             nombre,
             correo,
             password: hashedPassword,
-            rol: rol || "user" // asignar rol por defecto si no se proporciona
+            rol: rol || "user",
+            coach: coach || ""
         })
 
         await nuevoUsuario.save()
@@ -30,6 +39,7 @@ export const register = async (req, res) => {
 
     } catch (error) {
         res.status(500).json({error: 'Error al registrar el usuario'})
+        console.error(error)
     }
 }
 

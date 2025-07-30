@@ -24,6 +24,22 @@ const userSchema = new mongoose.Schema({
         enum: ["admin", "user", "coach"],
         default: "user",
     },
+    status: {
+        type: String,
+        enum: ["activo", "inactivo"],
+    },
+    coach: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+    }
 })
+
+userSchema.pre("save", function (next) {
+    if (this.rol === "user" && !this.status) {
+        this.status = "activo";
+    }
+    next();
+});
+
 
 export const userModel = mongoose.model("user", userSchema);
