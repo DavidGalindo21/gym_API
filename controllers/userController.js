@@ -32,7 +32,9 @@ export const actualizarUsuario = async (req, res) => {
 
     if (correo !== undefined) {
       if (!correo.trim()) {
-        return res.status(400).json({ error: "Correo no puede estar vacío" });
+        if (req.user.rol !== "admin") {
+          return res.status(400).json({ error: "Correo no puede estar vacío" });
+        }
       }
       usuario.correo = correo.trim();
     }

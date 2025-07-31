@@ -1,5 +1,7 @@
 import {register,login} from '../controllers/authController.js'
 import { Router } from 'express'
+import { verificarToken } from '../middlewares/authMiddleware.js'
+import { permitirRol } from '../middlewares/roleMiddleware.js'
 
 
 const router = Router()
@@ -20,7 +22,7 @@ const router = Router()
  *       500:
  *         description: Error del servidor al registrar el usuario
  */
-router.post('/register', register)
+router.post('/admin/register', verificarToken,permitirRol("admin"),register)
 /**
  * @swagger
  * /login:

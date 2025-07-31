@@ -1,6 +1,6 @@
 import { userModel } from "../models/userModel.js"
-
-
+import Routine from '../models/routineModel.js';
+import bcrypt from 'bcrypt';
 
 export const getUserCoach = async (req, res) => {
     try {
@@ -60,5 +60,52 @@ export const actualizarUsuario = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al actualizar el usuario" });
+  }
+};
+export const subirRutina = async (req, res) => {
+   console.log('req.file:', req.file);
+  console.log('req.body:', req.body);
+  try {
+    const { studentId } = req.params;
+    const coachId = req.user.id;
+
+    if (!req.file) {
+      return res.status(400).json({ error: "No se ha subido ningún archivo" });
+    }
+
+    const cliente = await userModel.findOne({ _id: studentId, coach: coachId });
+    if (!cliente) {
+      return res.status(403).json({ error: "Cliente no asignado a este coach" });
+    }
+
+    const rutina = new Routine({
+      coachId,
+      studentId,
+      filename: req.file.originalname,
+      filepath: req.file.path,
+    });
+
+    await rutina.save();
+    res.status(201).json({ message: "Rutina subida exitosamente", rutina });
+  } catch (error) {
+    console.error("Error al subir rutina:", error);
+    res.status(500).json({ error: "Error al subir la rutina" });
+  }
+};
+
+export const obtenerRutinasPorCoach = async (req, res) => {
+  try {
+    const coachId = req.user.id;
+
+    const rutinas = await Routine.find({ coachId }).populate("studentId", "nombre correo");
+
+    if (!rutinas || rutinas.length === 0) {
+      return res.status(204).json({ message: "No se encontraron rutinas asignadas" });
+    }
+
+    res.status(200).json(rutinas);
+  } catch (error) {
+    console.error("Error al obtener rutinas:", error);
+    res.status(500).json({ error: "Error al obtener rutinas del entrenador" });
   }
 };
