@@ -2,6 +2,7 @@ import { userModel } from "../models/userModel.js"
 import Routine from '../models/routineModel.js';
 import bcrypt from 'bcrypt';
 
+
 export const getUserCoach = async (req, res) => {
     try {
         const usersCouch = await userModel.find({rol: "user",coach: req.user.id }).select("-password -__v");
@@ -62,15 +63,14 @@ export const actualizarUsuario = async (req, res) => {
     res.status(500).json({ error: "Error al actualizar el usuario" });
   }
 };
+
 export const subirRutina = async (req, res) => {
-   console.log('req.file:', req.file);
-  console.log('req.body:', req.body);
   try {
     const { studentId } = req.params;
     const coachId = req.user.id;
 
     if (!req.file) {
-      return res.status(400).json({ error: "No se ha subido ningún archivo" });
+      return res.status(400).json({ error: "Solo se permiten archivos PDF" });
     }
 
     const cliente = await userModel.findOne({ _id: studentId, coach: coachId });
@@ -95,8 +95,7 @@ export const subirRutina = async (req, res) => {
 
 export const obtenerRutinasPorCoach = async (req, res) => {
   try {
-    const coachId = req.user.id;
-
+    const coachId = req.user?.id;
     const rutinas = await Routine.find({ coachId }).populate("studentId", "nombre correo");
 
     if (!rutinas || rutinas.length === 0) {

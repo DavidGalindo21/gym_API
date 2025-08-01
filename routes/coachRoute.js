@@ -3,8 +3,27 @@ import { verificarToken } from "../middlewares/authMiddleware.js";
 import { getUserCoach, actualizarUsuario, subirRutina, obtenerRutinasPorCoach } from "../controllers/coachController.js";
 import { permitirRol } from "../middlewares/roleMiddleware.js";
 import multer from "multer";
-const upload = multer({ dest: 'uploads/' });
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'uploads/'),
+  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname),
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'application/pdf') {
+    cb(null, true);
+  } else {
+    cb(new Error('Solo se permiten archivos PDF'), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter
+});
+
 const route = Router();
+
 
 // Rutas para el coach
 /**
@@ -59,9 +78,33 @@ route.put('/coach/:key/:value', verificarToken,permitirRol('coach'),actualizarUs
  *       500:
  *         description: Error del servidor al actualizar el usuario
  */
-route.post('/coach/rutina/:studentId', verificarToken, permitirRol('coach'), upload.single('pdf'), subirRutina);
-
+route.post('/coach/rutina/:studentId', verificarToken, permitirRol('coach'), (req, res, next) => {
+  upload.single('pdf')(req, res, function(err) {
+    if (err) {
+      if (err.message === 'Solo se permiten archivos PDF') {
+        return res.status(400).json({ error: err.message });
+      }
+      return res.status(500).json({ error: 'Error al subir archivo' });
+    }
+    next();
+  });
+}, subirRutina);
+/**
+ * @swagger
+ * /coach/rutinas:
+ *   get:
+ *     summary: Obtener las rutinas subidas por el coach y asignadas a sus estudiantes
+ *     tags: [Coach]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de rutinas encontradas
+ *       204:
+ *         description: No hay rutinas disponibles
+ *       500:
+ *         description: Error del servidor
+ */
 route.get('/coach/rutinas', verificarToken, permitirRol('coach'), obtenerRutinasPorCoach);
-
 
 export default route;

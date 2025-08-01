@@ -1,6 +1,6 @@
+import Routine from "../models/routineModel.js";
 import { userModel } from "../models/userModel.js";
 import bcrypt from "bcryptjs";
-
 
 export const actualizarUsuario = async (req, res) => {
   try {
@@ -10,7 +10,6 @@ export const actualizarUsuario = async (req, res) => {
     const query = {};
     query[key] = value;
 
-    // Realiza la busqueda
     const usuario = await userModel.findOne(query);
     if (!usuario) {
       return res.status(404).json({ error: "Usuario no encontrado" });
@@ -31,12 +30,11 @@ export const actualizarUsuario = async (req, res) => {
     }
 
     if (correo !== undefined) {
-      if (!correo.trim()) {
-        if (req.user.rol !== "admin") {
-          return res.status(400).json({ error: "Correo no puede estar vacío" });
-        }
+      const correoLimpio = correo.trim();
+      if (!correoLimpio && req.user.rol !== "admin") {
+        return res.status(400).json({ error: "Correo no puede estar vacío" });
       }
-      usuario.correo = correo.trim();
+      usuario.correo = correoLimpio;
     }
 
     if (password !== undefined) {
@@ -52,5 +50,22 @@ export const actualizarUsuario = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al actualizar el usuario" });
+  }
+};
+
+export const obtenerRutinasPorUsuario = async (req, res) => {
+  try {
+    const studentId = req.user.id;
+
+    const rutinas = await Routine.find({ studentId }).populate("coachId", "nombre correo");
+
+    if (!rutinas || rutinas.length === 0) {
+      return res.status(204).json({ message: "No se encontraron rutinas asignadas a este usuario" });
+    }
+
+    res.status(200).json(rutinas);
+  } catch (error) {
+    console.error("Error al obtener rutinas del usuario:", error);
+    res.status(500).json({ error: "Error al obtener rutinas del usuario" });
   }
 };

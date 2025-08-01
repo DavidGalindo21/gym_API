@@ -1,4 +1,4 @@
-import { actualizarUsuario } from "../controllers/userController.js";
+import { actualizarUsuario, obtenerRutinasPorUsuario } from "../controllers/userController.js";
 import { Router } from "express";
 import { verificarToken } from "../middlewares/authMiddleware.js";
 import { permitirRol } from "../middlewares/roleMiddleware.js";
@@ -26,5 +26,23 @@ router.put(
   permitirRol("user"),
   actualizarUsuario
 );
+
+/**
+ * @swagger
+ * /user/rutinas:
+ *   get:
+ *     summary: Obtener las rutinas asignadas al usuario
+ *     tags: [Usuario]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de rutinas encontradas
+ *       204:
+ *         description: No hay rutinas disponibles
+ *       500:
+ *         description: Error del servidor
+ */
+router.get("/user/rutinas", verificarToken, permitirRol("user"), obtenerRutinasPorUsuario);
 
 export default router;

@@ -3,12 +3,12 @@ import mongoose from 'mongoose';
 const routineSchema = new mongoose.Schema({
   coachId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'user',
     required: true,
   },
   studentId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'user',
     required: true,
   },
   filename: {
