@@ -96,3 +96,35 @@ export const getCoaches = async (req, res) => {
     res.status(500).json({ error: "Error al obtener entrenadores" });
   }
 };
+
+
+// Eliminar usuario o coach por id o correo
+export const eliminarUsuario = async (req, res) => {
+  try {
+    if (req.user.rol !== "admin") {
+      return res.status(403).json({ error: "No tienes permiso para eliminar usuarios" });
+    }
+
+    const { key, value } = req.params;
+
+    const camposPermitidos = ["correo", "_id", "uid"];
+    if (!camposPermitidos.includes(key)) {
+      return res.status(400).json({ error: "Campo de búsqueda no permitido" });
+    }
+
+    const query = {};
+    query[key] = value;
+
+    const usuario = await userModel.findOne(query);
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    await userModel.deleteOne({ _id: usuario._id });
+
+    res.status(200).json({ message: `Usuario ${usuario.nombre} eliminado correctamente` });
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error);
+    res.status(500).json({ error: "Error al eliminar el usuario" });
+  }
+};

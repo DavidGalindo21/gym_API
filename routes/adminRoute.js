@@ -1,4 +1,4 @@
-import { actualizarUsuario, getCoaches } from "../controllers/adminController.js";
+import { actualizarUsuario, eliminarUsuario, getCoaches } from "../controllers/adminController.js";
 import { getUsers } from '../controllers/adminController.js'
 import { Router } from "express";
 import { verificarToken } from '../middlewares/authMiddleware.js'
@@ -52,7 +52,26 @@ router.get('/admin/couches', verificarToken,permitirRol('admin'), getCoaches)
  */
 
 router.put('/admin/:key/:value',verificarToken,permitirRol('admin'),actualizarUsuario)
+/**
+ * @swagger
+ * /admin/{correo}/{valor}:
+ *   put:
+ *     summary: Eliminar usuarios o coach por id o correo
+ *     description: Permite al administrador eliminar un usuario o coach por su id o correo.
+ *     tags: [Administrador]
+ *     responses:
+ *       200:
+ *         description: Usuario eliminado correctamente
+ *       204:
+ *        description: Petición realizada con exito pero sin nada que devolver
+ *       400:
+ *         description: Campo de búsqueda no permitido
+ *       403:
+ *         description: No tienes permiso para eliminar usuarios
+ *       404:
+ *         description: Usuario no encontrado
+ */
 
-
+router.delete('/admin/eliminar/:key/:value', verificarToken, permitirRol('admin'), eliminarUsuario);
 
 export default router;
