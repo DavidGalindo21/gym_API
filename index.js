@@ -4,6 +4,7 @@ import authRoutes from './routes/authRoute.js'
 import adminRoutes from './routes/adminRoute.js'
 import userRoutes from './routes/userRoute.js'
 import route from './routes/coachRoute.js'
+import membresiasRouter from "./routes/membresiaRouter.js"
 import morgan from 'morgan'
 import { options } from './swagger/swaggerOptions.js'
 import swaggerJSDoc from 'swagger-jsdoc'
@@ -19,6 +20,7 @@ app.use('/api',authRoutes)
 app.use('/api',adminRoutes)
 app.use('/api',userRoutes)
 app.use('/api', route)
+app.use('/api',membresiasRouter)
 app.use('/users',(req,res) =>{
     userModel.find().then(users => {
         res.json(users)

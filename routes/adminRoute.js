@@ -51,11 +51,11 @@ router.get('/admin/couches', verificarToken,permitirRol('admin'), getCoaches)
  *         description: Usuario no encontrado
  */
 
-router.put('/admin/:key/:value',verificarToken,permitirRol('admin'),actualizarUsuario)
+router.put('/admin/usuario/:key/:value',verificarToken,permitirRol('admin'),actualizarUsuario)
 /**
  * @swagger
  * /admin/{correo}/{valor}:
- *   put:
+ *   delete:
  *     summary: Eliminar usuarios o coach por id o correo
  *     description: Permite al administrador eliminar un usuario o coach por su id o correo.
  *     tags: [Administrador]
@@ -72,6 +72,6 @@ router.put('/admin/:key/:value',verificarToken,permitirRol('admin'),actualizarUs
  *         description: Usuario no encontrado
  */
 
-router.delete('/admin/eliminar/:key/:value', verificarToken, permitirRol('admin'), eliminarUsuario);
+router.delete('/admin/:key/:value', verificarToken, permitirRol('admin'), eliminarUsuario);
 
 export default router;

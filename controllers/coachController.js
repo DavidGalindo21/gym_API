@@ -1,6 +1,6 @@
 import { userModel } from "../models/userModel.js"
 import Routine from '../models/routineModel.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 
 export const getUserCoach = async (req, res) => {
