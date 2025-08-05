@@ -22,9 +22,13 @@ const MembresiaSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+    fecha_vencimiento: {
+    type: Date,
+    required: true
+  },
   tipo_membresia: {
     type: String,
-    enum: ['Basica', 'Golden', 'Premium'],
+    enum: ['Visita', 'Semanal', 'Quincenal', 'Mensual'],
     required: true
   },
   total: {

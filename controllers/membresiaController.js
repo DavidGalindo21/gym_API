@@ -21,12 +21,37 @@ export const insertMembresia = async (req, res) => {
       });
     }
 
+    // Calcular fecha de vencimiento automáticamente
+    const fechaPago = new Date(fecha_pago);
+    let fechaVencimiento = new Date(fechaPago);
+
+    switch (tipo_membresia) {
+      case "Visita":
+        fechaVencimiento.setHours(fechaVencimiento.getHours() + 24);
+        break;
+      case "Semanal":
+        fechaVencimiento.setDate(fechaVencimiento.getDate() + 8);
+        break;
+      case "Quincenal":
+        fechaVencimiento.setDate(fechaVencimiento.getDate() + 15);
+        break;
+      case "Mensual":
+        fechaVencimiento.setMonth(fechaVencimiento.getMonth() + 1);
+        break;
+      default:
+        return res.status(400).json({
+          success: false,
+          message: "Tipo de membresía inválido.",
+        });
+    }
+
     const nuevaMembresia = new modeloMenmbresia({
       user: usuario._id,
       nombreCliente,
       email,
       telefono,
-      fecha_pago,
+      fecha_pago: fechaPago,
+      fecha_vencimiento: fechaVencimiento,
       tipo_membresia,
       total,
     });
@@ -54,26 +79,34 @@ export const getMembresias = async (req, res) => {
       return res
         .status(204)
         .json({ success: false, message: "No hay membresías registradas" });
-    return res
-      .status(200)
-      .json({ success: true, message: "Membresías encontradas", membresias });
+
+    return res.status(200).json({
+      success: true,
+      message: "Membresías encontradas",
+      membresias,
+    });
   } catch (error) {
-    return res.status(500).json({ success: false, message: "Error interno del servidor" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Error interno del servidor" });
   }
 };
 
-// Eliminar usuario o coach por id o correo
 export const eliminarMembresia = async (req, res) => {
   try {
     if (req.user.rol !== "admin") {
-      return res.status(403).json({ error: "No tienes permiso para eliminar membresias" });
+      return res
+        .status(403)
+        .json({ error: "No tienes permiso para eliminar membresias" });
     }
 
     const { key, value } = req.params;
 
     const camposPermitidos = ["correo", "_id"];
     if (!camposPermitidos.includes(key)) {
-      return res.status(400).json({ error: "Campo de búsqueda no permitido" });
+      return res
+        .status(400)
+        .json({ error: "Campo de búsqueda no permitido" });
     }
 
     const query = {};
@@ -86,9 +119,11 @@ export const eliminarMembresia = async (req, res) => {
 
     await modeloMenmbresia.deleteOne({ _id: usuario._id });
 
-    res.status(200).json({ message: `Membresia de ${usuario.nombreCliente} eliminado correctamente` });
+    res.status(200).json({
+      message: `Membresía de ${usuario.nombreCliente} eliminada correctamente`,
+    });
   } catch (error) {
-    console.error("Error al eliminar la membresia:", error);
-    res.status(500).json({ error: "Error al eliminar la membresia" });
+    console.error("Error al eliminar la membresía:", error);
+    res.status(500).json({ error: "Error al eliminar la membresía" });
   }
 };
