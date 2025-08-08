@@ -4,18 +4,16 @@ import { modeloMenmbresia } from "../models/franquiciaModel.js";
 export const insertMembresia = async (req, res) => {
   try {
     const {
-      nombreCliente,
-      email,
-      telefono,
+      email,          
       fecha_pago,
       tipo_membresia,
       total,
     } = req.body;
 
+    // Buscar al usuario por correo
     const usuario = await userModel.findOne({ correo: email });
-
     if (!usuario) {
-      return res.status(204).json({
+      return res.status(404).json({
         success: false,
         message: "Usuario no encontrado con ese correo.",
       });
@@ -45,15 +43,19 @@ export const insertMembresia = async (req, res) => {
         });
     }
 
+    const estado = fechaVencimiento > new Date() ? "Activo" : "Inactivo";
+
+    // Crear la membresía con datos del usuario obtenidos por correo
     const nuevaMembresia = new modeloMenmbresia({
       user: usuario._id,
-      nombreCliente,
-      email,
-      telefono,
+      nombreCliente: usuario.nombre,
+      email: usuario.correo,
+      telefono: usuario.telefono,
       fecha_pago: fechaPago,
       fecha_vencimiento: fechaVencimiento,
       tipo_membresia,
       total,
+      estado,
     });
 
     await nuevaMembresia.save();
@@ -72,32 +74,52 @@ export const insertMembresia = async (req, res) => {
   }
 };
 
+
 export const getMembresias = async (req, res) => {
   try {
-    const membresias = await modeloMenmbresia.find().sort({ $natural: -1 });
-    if (!membresias)
-      return res
-        .status(204)
-        .json({ success: false, message: "No hay membresías registradas" });
+    const membresias = await modeloMenmbresia
+      .find()
+      .sort({ $natural: -1 })
+      .populate('user', 'nombre telefono correo'); 
+
+    if (!membresias || membresias.length === 0) {
+      return res.status(204).json({
+        success: false,
+        message: "No hay membresías registradas",
+      });
+    }
+
+    const membresiasConEstado = membresias.map((m) => {
+      const hoy = new Date();
+      const estado = new Date(m.fecha_vencimiento) > hoy ? "Activo" : "Inactivo";
+
+      return {
+        ...m.toObject(),
+        estado,
+      };
+    });
 
     return res.status(200).json({
       success: true,
       message: "Membresías encontradas",
-      membresias,
+      membresias: membresiasConEstado,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: "Error interno del servidor" });
+    console.error("Error al obtener membresías:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error interno del servidor",
+    });
   }
 };
+
 
 export const eliminarMembresia = async (req, res) => {
   try {
     if (req.user.rol !== "admin") {
       return res
         .status(403)
-        .json({ error: "No tienes permiso para eliminar membresias" });
+        .json({ error: "No tienes permiso para eliminar membresías" });
     }
 
     const { key, value } = req.params;

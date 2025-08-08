@@ -1,28 +1,16 @@
 import mongoose from "mongoose";
 
 const MembresiaSchema = new mongoose.Schema({
-   user: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  nombreCliente:{
-    type: String,
-    required: true
-  },
-  email: {
-    type: String,
-    required: true
-  },
-  telefono: {
-    type: String,
+    ref: 'user',
     required: true
   },
   fecha_pago: {
     type: Date,
     required: true
   },
-    fecha_vencimiento: {
+  fecha_vencimiento: {
     type: Date,
     required: true
   },
@@ -39,7 +27,13 @@ const MembresiaSchema = new mongoose.Schema({
   creadoEn: {
     type: Date,
     default: Date.now
+  },
+  estado: { 
+    type: String,
+    enum: ["Activo", "Inactivo"], 
+    default: "Activo"
   }
 });
+
 
 export const modeloMenmbresia = mongoose.model('membresia', MembresiaSchema)
