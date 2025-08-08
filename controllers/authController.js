@@ -6,8 +6,27 @@ import { userModel } from "../models/userModel.js";
 const SECRET_KEY = configuracion.SECRET_KEY;
 export const register = async (req, res) => {
     try {
+<<<<<<< HEAD
         const { nombre, telefono, correo, password, rol = "user", coach } = req.body;
+=======
+        const { telefono, nombre, correo, password, rol = "user", coach } = req.body;
+   // Validaciones de campos obligatorios
+    if (!telefono || typeof telefono !== "string") {
+      return res.status(400).json({ error: "El teléfono es obligatorio y debe ser una cadena de texto." });
+    }
+>>>>>>> 787d96702757d2a56a5183440b62d252933ee90f
 
+   if ( !nombre || typeof nombre !== "string" || !/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,}$/.test(nombre.trim())) {
+    return res.status(400).json({ error: "El nombre es obligatorio, debe ser una cadena de texto válida y solo debe contener letras." });
+   }
+
+    if (!correo || typeof correo !== "string" || !/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(correo)) {
+     return res.status(400).json({ error: "El correo es obligatorio, debe ser una cadena de texto válida y tener formato de correo electrónico." });
+    }
+
+    if (!password || typeof password !== "string" || password.length < 6) {
+      return res.status(400).json({ error: "La contraseña es obligatoria y debe tener al menos 6 caracteres." });
+    }
         // Verificar si ya existe un usuario con ese correo
         const existe = await userModel.findOne({ correo });
         if (existe) return res.status(400).json({ error: 'El correo ya está registrado' });
@@ -39,7 +58,7 @@ export const register = async (req, res) => {
             correo,
             password,
             rol,
-            coach: coachIdToSave, // Será null si no corresponde
+            coach: coachIdToSave, 
         });
 
         await nuevoUsuario.save();

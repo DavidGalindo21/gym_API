@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verificarToken } from "../middlewares/authMiddleware.js";
-import { getUserCoach, actualizarUsuario, subirRutina, obtenerRutinasPorCoach } from "../controllers/coachController.js";
+import { getUserCoach, subirRutina, obtenerRutinasPorCoach,actualizarPerfil } from "../controllers/coachController.js";
 import { permitirRol } from "../middlewares/roleMiddleware.js";
 import multer from "multer";
 
@@ -45,9 +45,9 @@ const route = Router();
 route.get('/coach/alumnos', verificarToken,permitirRol('coach'),getUserCoach)
 /**
  * @swagger
- * /coach/{correo}/{valor}:
+ * /coach/actualizarPerfil:
  *   put:
- *     summary: Actualizar el perfil por correo
+ *     summary: Actualizar el perfil 
  *     tags: [Coach]
  *     responses:
  *       200:
@@ -59,12 +59,12 @@ route.get('/coach/alumnos', verificarToken,permitirRol('coach'),getUserCoach)
  *       500:
  *         description: Error del servidor al actualizar el usuario
  */
-route.put('/coach/:key/:value', verificarToken,permitirRol('coach'),actualizarUsuario)
+route.put('/coach/editPerfil', verificarToken,permitirRol('coach'),actualizarPerfil)
 
 /**
  * @swagger
  * /coach/{correo}/{valor}:
- *   put:
+ *   post:
  *     summary: Subir archivo PDF de rutina
  *     description: Permite al coach subir un archivo PDF de rutina para un usuario específico.     
  *     tags: [Coach]

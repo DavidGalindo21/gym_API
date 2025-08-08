@@ -1,8 +1,10 @@
-import { actualizarUsuario, eliminarUsuario, getCoaches } from "../controllers/adminController.js";
+import { actualizarUsuario, eliminarUsuario, getCoaches, actualizarPerfil} from "../controllers/adminController.js";
 import { getUsers } from '../controllers/adminController.js'
 import { Router } from "express";
 import { verificarToken } from '../middlewares/authMiddleware.js'
 import { permitirRol } from '../middlewares/roleMiddleware.js'
+import { generarReporteClientes } from "../controllers/reporteClientController.js";
+import {generarReporteMembresias} from "../controllers/reporteMembController.js"
 
 const router = Router();
 /**
@@ -72,6 +74,55 @@ router.put('/admin/usuario/:key/:value',verificarToken,permitirRol('admin'),actu
  *         description: Usuario no encontrado
  */
 
-router.delete('/admin/:key/:value', verificarToken, permitirRol('admin'), eliminarUsuario);
+router.delete('/admin/usuarios/:key/:value', verificarToken, permitirRol('admin'), eliminarUsuario);
+/**
+ * @swagger
+ * /admin/reporte/cientes:
+ *   get:
+ *     summary: Obtener reporte
+ *     description: Permite al administrador descargar un reporte de clientes.
+ *     tags: [Administrador]
+ *     responses:
+ *       200:
+ *         description: Reporte generado correctamente
+ *       403:
+ *         description: No tienes permiso para eliminar usuarios
+ *       404:
+ *         description: No hay clientes registrados
+ */
+
+router.get('/admin/reporte/clientes', verificarToken, permitirRol('admin'), generarReporteClientes);
+/**
+ * @swagger
+ * /admin/reporte/membresias:
+ *   get:
+ *     summary: Obtener reporte membresias
+ *     description: Permite al administrador descargar un reporte de membresias.
+ *     tags: [Administrador]
+ *     responses:
+ *       200:
+ *         description: Reporte generado correctamente
+ *       403:
+ *         description: No tienes permiso para eliminar usuarios
+ *       404:
+ *         description: No hay clientes registrados
+ */
+router.get('/admin/reportes/membresias', verificarToken, permitirRol('admin'), generarReporteMembresias)
+/**
+ * @swagger
+ * /admin/actualizar:
+ *   put:
+ *     summary: Actualizar perfil del admin logeado
+ *     description: Permite al administrador actualizar su perfil.
+ *     tags: [Administrador]
+ *     responses:
+ *       200:
+ *         description: Usuario actualizado correctamente
+ *       400:
+ *         description: Campo inválido
+ *       404:
+ *         description: Usuario no encontrado
+ */
+router.put('/admin/actualizarPerfil', verificarToken, permitirRol('admin'), actualizarPerfil);
 
 export default router;

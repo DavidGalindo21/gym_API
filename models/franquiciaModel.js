@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const MembresiaSchema = new mongoose.Schema({
-   user: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
@@ -10,7 +10,7 @@ const MembresiaSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  correo: {
+  email: {
     type: String,
     required: true
   },
@@ -22,9 +22,13 @@ const MembresiaSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  fecha_vencimiento: {
+    type: Date,
+    required: true
+  },
   tipo_membresia: {
     type: String,
-    enum: ['Basica', 'Golden', 'Premium'],
+    enum: ['Visita', 'Semanal', 'Quincenal', 'Mensual'],
     required: true
   },
   total: {
@@ -35,7 +39,13 @@ const MembresiaSchema = new mongoose.Schema({
   creadoEn: {
     type: Date,
     default: Date.now
+  },
+  estado: { 
+    type: String,
+    enum: ["Activo", "Inactivo"], 
+    default: "Activo"
   }
 });
+
 
 export const modeloMenmbresia = mongoose.model('membresia', MembresiaSchema)

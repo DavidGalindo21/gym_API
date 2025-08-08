@@ -4,31 +4,76 @@ import { modeloMenmbresia } from "../models/franquiciaModel.js";
 export const insertMembresia = async (req, res) => {
   try {
     const {
+<<<<<<< HEAD
       nombreCliente,
       correo,
       telefono,
+=======
+      email,          
+>>>>>>> 787d96702757d2a56a5183440b62d252933ee90f
       fecha_pago,
       tipo_membresia,
       total,
     } = req.body;
 
+<<<<<<< HEAD
     const usuario = await userModel.findOne({ correo });
 
+=======
+    // Buscar al usuario por correo
+    const usuario = await userModel.findOne({ correo: email });
+>>>>>>> 787d96702757d2a56a5183440b62d252933ee90f
     if (!usuario) {
-      return res.status(204).json({
+      return res.status(404).json({
         success: false,
         message: "Usuario no encontrado con ese correo.",
       });
     }
 
+    // Calcular fecha de vencimiento automáticamente
+    const fechaPago = new Date(fecha_pago);
+    let fechaVencimiento = new Date(fechaPago);
+
+    switch (tipo_membresia) {
+      case "Visita":
+        fechaVencimiento.setHours(fechaVencimiento.getHours() + 24);
+        break;
+      case "Semanal":
+        fechaVencimiento.setDate(fechaVencimiento.getDate() + 8);
+        break;
+      case "Quincenal":
+        fechaVencimiento.setDate(fechaVencimiento.getDate() + 15);
+        break;
+      case "Mensual":
+        fechaVencimiento.setMonth(fechaVencimiento.getMonth() + 1);
+        break;
+      default:
+        return res.status(400).json({
+          success: false,
+          message: "Tipo de membresía inválido.",
+        });
+    }
+
+    const estado = fechaVencimiento > new Date() ? "Activo" : "Inactivo";
+
+    // Crear la membresía con datos del usuario obtenidos por correo
     const nuevaMembresia = new modeloMenmbresia({
       user: usuario._id,
+<<<<<<< HEAD
       nombreCliente,
       correo,
       telefono,
       fecha_pago,
+=======
+      nombreCliente: usuario.nombre,
+      email: usuario.correo,
+      telefono: usuario.telefono,
+      fecha_pago: fechaPago,
+      fecha_vencimiento: fechaVencimiento,
+>>>>>>> 787d96702757d2a56a5183440b62d252933ee90f
       tipo_membresia,
       total,
+      estado,
     });
 
     await nuevaMembresia.save();
@@ -47,33 +92,61 @@ export const insertMembresia = async (req, res) => {
   }
 };
 
+
 export const getMembresias = async (req, res) => {
   try {
-    const membresias = await modeloMenmbresia.find().sort({ $natural: -1 });
-    if (!membresias)
-      return res
-        .status(204)
-        .json({ success: false, message: "No hay membresías registradas" });
-    return res
-      .status(200)
-      .json({ success: true, message: "Membresías encontradas", membresias });
+    const membresias = await modeloMenmbresia
+      .find()
+      .sort({ $natural: -1 })
+      .populate('user', 'nombre telefono correo'); 
+
+    if (!membresias || membresias.length === 0) {
+      return res.status(204).json({
+        success: false,
+        message: "No hay membresías registradas",
+      });
+    }
+
+    const membresiasConEstado = membresias.map((m) => {
+      const hoy = new Date();
+      const estado = new Date(m.fecha_vencimiento) > hoy ? "Activo" : "Inactivo";
+
+      return {
+        ...m.toObject(),
+        estado,
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Membresías encontradas",
+      membresias: membresiasConEstado,
+    });
   } catch (error) {
-    return res.status(500).json({ success: false, message: "Error interno del servidor" });
+    console.error("Error al obtener membresías:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error interno del servidor",
+    });
   }
 };
 
-// Eliminar usuario o coach por id o correo
+
 export const eliminarMembresia = async (req, res) => {
   try {
     if (req.user.rol !== "admin") {
-      return res.status(403).json({ error: "No tienes permiso para eliminar membresias" });
+      return res
+        .status(403)
+        .json({ error: "No tienes permiso para eliminar membresías" });
     }
 
     const { key, value } = req.params;
 
     const camposPermitidos = ["correo", "_id"];
     if (!camposPermitidos.includes(key)) {
-      return res.status(400).json({ error: "Campo de búsqueda no permitido" });
+      return res
+        .status(400)
+        .json({ error: "Campo de búsqueda no permitido" });
     }
 
     const query = {};
@@ -86,9 +159,11 @@ export const eliminarMembresia = async (req, res) => {
 
     await modeloMenmbresia.deleteOne({ _id: usuario._id });
 
-    res.status(200).json({ message: `Membresia de ${usuario.nombreCliente} eliminado correctamente` });
+    res.status(200).json({
+      message: `Membresía de ${usuario.nombreCliente} eliminada correctamente`,
+    });
   } catch (error) {
-    console.error("Error al eliminar la membresia:", error);
-    res.status(500).json({ error: "Error al eliminar la membresia" });
+    console.error("Error al eliminar la membresía:", error);
+    res.status(500).json({ error: "Error al eliminar la membresía" });
   }
 };
