@@ -10,7 +10,7 @@ const MembresiaSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  email: {
+  correo: {
     type: String,
     required: true
   },

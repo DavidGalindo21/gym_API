@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  gym_app:
+    container_name: api_gym
+    restart: always
+    build: .
+    ports:
+      - "3000:3000"
+    links: 
+      - mongo
+    volumes:
+      - .:/usr/src/app
+    logging:
+      driver: "json-file"
+  mongo:
+    container_name: mymongodatabase
+    image: mongo
+    ports:
+      - "27017:27017"
+    logging:
+      driver: "json-file"

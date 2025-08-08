@@ -6,7 +6,7 @@ import { userModel } from "../models/userModel.js";
 const SECRET_KEY = configuracion.SECRET_KEY;
 export const register = async (req, res) => {
     try {
-        const { telefono, nombre, correo, password, rol = "user", coach } = req.body;
+        const { nombre, telefono, correo, password, rol = "user", coach } = req.body;
 
         // Verificar si ya existe un usuario con ese correo
         const existe = await userModel.findOne({ correo });
@@ -32,15 +32,12 @@ export const register = async (req, res) => {
             coachIdToSave = null;
         }
 
-        // Encriptar contraseña
-        const hashedPassword = await bcrypt.hash(password, 10);
-
         // Crear nuevo usuario
         const nuevoUsuario = new userModel({
             telefono,
             nombre,
             correo,
-            password: hashedPassword,
+            password,
             rol,
             coach: coachIdToSave, // Será null si no corresponde
         });
@@ -57,31 +54,60 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
+        console.log("BODY RECIBIDO:", req.body);
         const { correo, password } = req.body;
 
-        // verificar si el usuario existe
+        // Validar que lleguen los datos requeridos
+        if (!correo || !password) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'Correo y contraseña son requeridos' 
+            });
+        }
+
+        // Verificar si el usuario existe
         const usuario = await userModel.findOne({ correo });
-        if (!usuario) return res.status(400).json({ error: 'Usuario o contraseña incorrectos' });
+        if (!usuario) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'Usuario o contraseña incorrectos' 
+            });
+        }
 
-        const match = await bcrypt.compare(password, usuario.password)
-        if (!match) return res.status(400).json({ error: 'Usuario o contraseña incorrectos' });
+        if (usuario.password !== password) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'Usuario o contraseña incorrectos' 
+            });
+        }
 
-        // generar token
-        const token = jwt.sign({id:usuario._id,rol:usuario.rol},SECRET_KEY,{expiresIn: '1h'})
+        // Generar token
+        const token = jwt.sign(
+            { id: usuario._id, rol: usuario.rol }, 
+            SECRET_KEY, 
+            { expiresIn: '1h' }
+        );
 
+        console.log("Login exitoso para:", correo);
+        
         res.json({
-            mensaje: 'Inicio de sesión exitoso',
+            success: true,
+            message: 'Inicio de sesión exitoso',
             token,
-            usuario: {
+            user: {
                 id: usuario._id,
                 telefono: usuario.telefono,
                 nombre: usuario.nombre,
                 correo: usuario.correo,
                 rol: usuario.rol
             }
-        })
+        });
 
     } catch (error) {
-        res.status(500).json({ error: 'Error al iniciar sesión' });
+        console.error("Error en login:", error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Error al iniciar sesión' 
+        });
     }
 }

@@ -23,19 +23,19 @@ const router = Router();
 router.get('/admin/usuarios', verificarToken,permitirRol('admin'), getUsers)
 /**
  * @swagger
- * /admin/couches:
+ * /admin/coaches:
  *   get:
- *     summary: Obtener todos los couches
+ *     summary: Obtener todos los coaches
  *     tags: [Administrador]
  *     responses:
  *       200:
- *         description: Couches encontrado
+ *         description: Coaches encontrados
  *       204:
  *        description: Petición realizada con exito pero sin nada que devolver
  *       404:
  *         description: El coach asignado no existe o no es válido
  */
-router.get('/admin/couches', verificarToken,permitirRol('admin'), getCoaches)
+router.get('/admin/coaches', verificarToken,permitirRol('admin'), getCoaches)
 /**
  * @swagger
  * /admin/{correo}/{valor}:

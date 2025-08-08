@@ -5,14 +5,14 @@ export const insertMembresia = async (req, res) => {
   try {
     const {
       nombreCliente,
-      email,
+      correo,
       telefono,
       fecha_pago,
       tipo_membresia,
       total,
     } = req.body;
 
-    const usuario = await userModel.findOne({ correo: email });
+    const usuario = await userModel.findOne({ correo });
 
     if (!usuario) {
       return res.status(204).json({
@@ -24,7 +24,7 @@ export const insertMembresia = async (req, res) => {
     const nuevaMembresia = new modeloMenmbresia({
       user: usuario._id,
       nombreCliente,
-      email,
+      correo,
       telefono,
       fecha_pago,
       tipo_membresia,
