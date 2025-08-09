@@ -6,15 +6,7 @@ import { userModel } from "../models/userModel.js";
 const SECRET_KEY = configuracion.SECRET_KEY;
 export const register = async (req, res) => {
     try {
-<<<<<<< HEAD
         const { nombre, telefono, correo, password, rol = "user", coach } = req.body;
-=======
-        const { telefono, nombre, correo, password, rol = "user", coach } = req.body;
-   // Validaciones de campos obligatorios
-    if (!telefono || typeof telefono !== "string") {
-      return res.status(400).json({ error: "El teléfono es obligatorio y debe ser una cadena de texto." });
-    }
->>>>>>> 787d96702757d2a56a5183440b62d252933ee90f
 
    if ( !nombre || typeof nombre !== "string" || !/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,}$/.test(nombre.trim())) {
     return res.status(400).json({ error: "El nombre es obligatorio, debe ser una cadena de texto válida y solo debe contener letras." });

@@ -4,25 +4,16 @@ import { modeloMenmbresia } from "../models/franquiciaModel.js";
 export const insertMembresia = async (req, res) => {
   try {
     const {
-<<<<<<< HEAD
       nombreCliente,
       correo,
       telefono,
-=======
-      email,          
->>>>>>> 787d96702757d2a56a5183440b62d252933ee90f
       fecha_pago,
       tipo_membresia,
       total,
     } = req.body;
 
-<<<<<<< HEAD
     const usuario = await userModel.findOne({ correo });
 
-=======
-    // Buscar al usuario por correo
-    const usuario = await userModel.findOne({ correo: email });
->>>>>>> 787d96702757d2a56a5183440b62d252933ee90f
     if (!usuario) {
       return res.status(404).json({
         success: false,
@@ -59,18 +50,11 @@ export const insertMembresia = async (req, res) => {
     // Crear la membresía con datos del usuario obtenidos por correo
     const nuevaMembresia = new modeloMenmbresia({
       user: usuario._id,
-<<<<<<< HEAD
       nombreCliente,
       correo,
       telefono,
       fecha_pago,
-=======
-      nombreCliente: usuario.nombre,
-      email: usuario.correo,
-      telefono: usuario.telefono,
-      fecha_pago: fechaPago,
-      fecha_vencimiento: fechaVencimiento,
->>>>>>> 787d96702757d2a56a5183440b62d252933ee90f
+      fecha_vencimiento:fechaVencimiento,
       tipo_membresia,
       total,
       estado,

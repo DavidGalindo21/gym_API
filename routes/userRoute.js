@@ -23,7 +23,7 @@ const router = Router();
  *         description: Error del servidor al actualizar el usuario
  */
 router.put(
-  "/user/actualizar",
+  "/user/:key/:value",
   verificarToken,
   permitirRol("user"),
   actualizarUsuario

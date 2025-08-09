@@ -1,4 +1,4 @@
-import { actualizarUsuario, eliminarUsuario, getCoaches, actualizarPerfil} from "../controllers/adminController.js";
+import { actualizarUsuario, eliminarUsuario, getCoaches} from "../controllers/adminController.js";
 import { getUsers } from '../controllers/adminController.js'
 import { Router } from "express";
 import { verificarToken } from '../middlewares/authMiddleware.js'
@@ -53,7 +53,7 @@ router.get('/admin/coaches', verificarToken,permitirRol('admin'), getCoaches)
  *         description: Usuario no encontrado
  */
 
-router.put('/admin/usuario/:key/:value',verificarToken,permitirRol('admin'),actualizarUsuario)
+router.put('/admin/:key/:value',verificarToken,permitirRol('admin'),actualizarUsuario)
 /**
  * @swagger
  * /admin/{correo}/{valor}:
@@ -108,21 +108,6 @@ router.get('/admin/reporte/clientes', verificarToken, permitirRol('admin'), gene
  *         description: No hay clientes registrados
  */
 router.get('/admin/reportes/membresias', verificarToken, permitirRol('admin'), generarReporteMembresias)
-/**
- * @swagger
- * /admin/actualizar:
- *   put:
- *     summary: Actualizar perfil del admin logeado
- *     description: Permite al administrador actualizar su perfil.
- *     tags: [Administrador]
- *     responses:
- *       200:
- *         description: Usuario actualizado correctamente
- *       400:
- *         description: Campo inválido
- *       404:
- *         description: Usuario no encontrado
- */
-router.put('/admin/actualizarPerfil', verificarToken, permitirRol('admin'), actualizarPerfil);
+
 
 export default router;

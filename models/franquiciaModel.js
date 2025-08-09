@@ -3,14 +3,14 @@ import mongoose from "mongoose";
 const MembresiaSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'user',
     required: true
   },
   nombreCliente:{
     type: String,
     required: true
   },
-  email: {
+  correo: {
     type: String,
     required: true
   },

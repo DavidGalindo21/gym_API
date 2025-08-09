@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verificarToken } from "../middlewares/authMiddleware.js";
-import { getUserCoach, subirRutina, obtenerRutinasPorCoach,actualizarPerfil } from "../controllers/coachController.js";
+import { getUserCoach, subirRutina, obtenerRutinasPorCoach,actualizarUsuario } from "../controllers/coachController.js";
 import { permitirRol } from "../middlewares/roleMiddleware.js";
 import multer from "multer";
 
@@ -59,7 +59,7 @@ route.get('/coach/alumnos', verificarToken,permitirRol('coach'),getUserCoach)
  *       500:
  *         description: Error del servidor al actualizar el usuario
  */
-route.put('/coach/editPerfil', verificarToken,permitirRol('coach'),actualizarPerfil)
+route.put('/coach/:key/:value', verificarToken,permitirRol('coach'),actualizarUsuario)
 
 /**
  * @swagger

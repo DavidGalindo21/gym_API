@@ -1,61 +1,6 @@
 import { userModel } from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 
-//actualizar usario admin
-export const actualizarPerfil = async (req, res) => {
-  try {
-    const { telefono, nombre, correo, password } = req.body;
-
-    const usuario = await userModel.findById(req.user.id); 
-    if (!usuario) {
-      return res.status(404).json({ error: "Usuario no encontrado" });
-    }
-
-    if (telefono !== undefined) {
-      if (!telefono.trim()) {
-        return res.status(400).json({ error: "Teléfono no puede estar vacío" });
-      }
-      usuario.telefono = telefono.trim();
-    }
-
-    if (nombre !== undefined) {
-      if (!nombre.trim()) {
-        return res.status(400).json({ error: "Nombre no puede estar vacío" });
-      }
-      usuario.nombre = nombre.trim();
-    }
-
-if ('correo' in req.body) {
-  console.log("Intentando actualizar el correo:", correo);
-  if (req.user.rol !== "admin") {
-    return res.status(403).json({ error: "Solo el administrador puede cambiar el correo" });
-  }
-
-  const correoLimpio = (correo || "").trim();
-  if (!correoLimpio) {
-    return res.status(400).json({ error: "Correo no puede estar vacío" });
-  }
-
-  usuario.correo = correoLimpio;
-}
-
-
-    if (password !== undefined) {
-      if (!password.trim()) {
-        return res.status(400).json({ error: "La contraseña no puede estar vacía" });
-      }
-      usuario.password = await bcrypt.hash(password, 10);
-    }
-
-    await usuario.save();
-
-    res.status(200).json({ message: "Usuario actualizado exitosamente" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al actualizar el usuario" });
-  }
-};
-
 
 // Obtener todos los usuarios con rol "user"
 export const getUsers = async (req, res) => {
@@ -137,7 +82,7 @@ export const actualizarUsuario = async (req, res) => {
       if (!password.trim()) {
         return res.status(400).json({ error: "La contraseña no puede estar vacía" });
       }
-      usuario.password = await bcrypt.hash(password.trim(), 10);
+      usuario.password = password
     }
 
     await usuario.save();

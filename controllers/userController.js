@@ -4,49 +4,71 @@ import bcrypt from "bcryptjs";
 import { modeloMenmbresia } from "../models/franquiciaModel.js";
 export const actualizarUsuario = async (req, res) => {
   try {
+    const { key, value } = req.params;
     const { telefono, nombre, correo, password } = req.body;
 
-    const usuario = await userModel.findById(req.user.id); 
+    const query = {};
+    query[key] = value;
+
+    // Buscar usuario
+    const usuario = await userModel.findOne(query);
     if (!usuario) {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
+    // Validar y actualizar teléfono
     if (telefono !== undefined) {
-      if (!telefono.trim()) {
-        return res.status(400).json({ error: "Teléfono no puede estar vacío" });
+      if (
+        typeof telefono !== "string" ||
+        !telefono.trim()
+      ) {
+        return res.status(400).json({ error: "El teléfono es obligatorio y debe ser una cadena de texto." });
       }
       usuario.telefono = telefono.trim();
     }
 
+    // Validar y actualizar nombre
     if (nombre !== undefined) {
-      if (!nombre.trim()) {
-        return res.status(400).json({ error: "Nombre no puede estar vacío" });
+      const nombreLimpio = nombre.trim();
+      if (
+        typeof nombre !== "string" ||
+        !/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$/.test(nombreLimpio)
+      ) {
+        return res.status(400).json({
+          error: "El nombre es obligatorio, debe ser una cadena de texto válida y solo debe contener letras.",
+        });
       }
-      usuario.nombre = nombre.trim();
+      usuario.nombre = nombreLimpio;
     }
 
-if ('correo' in req.body) {
-  console.log("Intentando actualizar el correo:", correo);
-  if (req.user.rol !== "admin") {
-    return res.status(403).json({ error: "Solo el administrador puede cambiar el correo" });
-  }
+    // Validar y actualizar correo
+    if (correo !== undefined) {
+      const correoLimpio = correo.trim();
+      if (
+        typeof correo !== "string" ||
+        !/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(correoLimpio)
+      ) {
+        return res.status(400).json({
+          error: "El correo es obligatorio, debe ser una cadena de texto válida y tener formato de correo electrónico.",
+        });
+      }
+      usuario.correo = correoLimpio;
+    }
 
-  const correoLimpio = (correo || "").trim();
-  if (!correoLimpio) {
-    return res.status(400).json({ error: "Correo no puede estar vacío" });
-  }
-
-  usuario.correo = correoLimpio;
-}
-
-
+    // Validar y actualizar contraseña
     if (password !== undefined) {
-      if (!password.trim()) {
-        return res.status(400).json({ error: "La contraseña no puede estar vacía" });
+      if (
+        typeof password !== "string" ||
+        password.trim().length < 6
+      ) {
+        return res.status(400).json({
+          error: "La contraseña es obligatoria y debe tener al menos 6 caracteres.",
+        });
       }
-      usuario.password = await bcrypt.hash(password, 10);
+      usuario.password = password
     }
 
+    // Guardar cambios
     await usuario.save();
 
     res.status(200).json({ message: "Usuario actualizado exitosamente" });
