@@ -9,7 +9,7 @@ import {generarReporteMembresias} from "../controllers/reporteMembController.js"
 const router = Router();
 /**
  * @swagger
- * /admin/usuarios:
+ * /api/admin/usuarios:
  *   get:
  *     summary: Obtener todos los usuarios
  *     tags: [Administrador]
@@ -25,7 +25,7 @@ const router = Router();
 router.get('/admin/usuarios', verificarToken,permitirRol('admin'), getUsers)
 /**
  * @swagger
- * /admin/coaches:
+ * /api/admin/coaches:
  *   get:
  *     summary: Obtener todos los coaches
  *     tags: [Administrador]
@@ -40,7 +40,7 @@ router.get('/admin/usuarios', verificarToken,permitirRol('admin'), getUsers)
 router.get('/admin/coaches', verificarToken,permitirRol('admin'), getCoaches)
 /**
  * @swagger
- * /admin/{correo}/{valor}:
+ * /api/admin/correo/{valor}:
  *   put:
  *     summary: Actualizar el perfil por correo
  *     tags: [Administrador]
@@ -56,10 +56,10 @@ router.get('/admin/coaches', verificarToken,permitirRol('admin'), getCoaches)
 router.put('/admin/:key/:value',verificarToken,permitirRol('admin'),actualizarUsuario)
 /**
  * @swagger
- * /admin/{correo}/{valor}:
+ * /api/admin/correo/{valor}:
  *   delete:
- *     summary: Eliminar usuarios o coach por id o correo
- *     description: Permite al administrador eliminar un usuario o coach por su id o correo.
+ *     summary: Eliminar usuarios o coach por correo
+ *     description: Permite al administrador eliminar un usuario o coach por su correo.
  *     tags: [Administrador]
  *     responses:
  *       200:
@@ -77,7 +77,7 @@ router.put('/admin/:key/:value',verificarToken,permitirRol('admin'),actualizarUs
 router.delete('/admin/usuarios/:key/:value', verificarToken, permitirRol('admin'), eliminarUsuario);
 /**
  * @swagger
- * /admin/reporte/cientes:
+ * /api/admin/reporte/cientes:
  *   get:
  *     summary: Obtener reporte
  *     description: Permite al administrador descargar un reporte de clientes.
@@ -94,7 +94,7 @@ router.delete('/admin/usuarios/:key/:value', verificarToken, permitirRol('admin'
 router.get('/admin/reporte/clientes', verificarToken, permitirRol('admin'), generarReporteClientes);
 /**
  * @swagger
- * /admin/reporte/membresias:
+ * /api/admin/reporte/membresias:
  *   get:
  *     summary: Obtener reporte membresias
  *     description: Permite al administrador descargar un reporte de membresias.
@@ -107,7 +107,7 @@ router.get('/admin/reporte/clientes', verificarToken, permitirRol('admin'), gene
  *       404:
  *         description: No hay clientes registrados
  */
-router.get('/admin/reportes/membresias', verificarToken, permitirRol('admin'), generarReporteMembresias)
+router.get('/admin/reporte/membresias', verificarToken, permitirRol('admin'), generarReporteMembresias)
 
 
 export default router;

@@ -6,7 +6,7 @@ import { permitirRol } from "../middlewares/roleMiddleware.js";
 const router = Router()
 /**
  * @swagger
- * /admin/obtenermembresia:
+ * /api/admin/obtenermembresia:
  *   get:
  *     summary: Obtener las membresías
  *     tags: [Administrador]
@@ -23,7 +23,7 @@ const router = Router()
 router.get("/admin/obtenermembresia",verificarToken,permitirRol("admin"),getMembresias)
 /**
  * @swagger
- * /admin/crearmembresia:
+ * /api/admin/crearmembresia:
  *   post:
  *     summary: Crear una nueva membresía
  *     tags: [Administrador]
@@ -38,7 +38,7 @@ router.get("/admin/obtenermembresia",verificarToken,permitirRol("admin"),getMemb
 router.post("/admin/crearmembresia",verificarToken,permitirRol("admin"),insertMembresia)
 /**
  * @swagger
- * /admin/membresias:
+ * /api/admin/membresia/correo/{valor}:
  *   delete:
  *     summary: Eliminar membresia a un usuario
  *     tags: [Administrador]

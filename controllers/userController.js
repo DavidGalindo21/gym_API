@@ -2,6 +2,10 @@ import Routine from "../models/routineModel.js";
 import { userModel } from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import { modeloMenmbresia } from "../models/franquiciaModel.js";
+import path from "path"
+import fs from "fs"
+
+
 export const actualizarUsuario = async (req, res) => {
   try {
     const { key, value } = req.params;
@@ -146,3 +150,24 @@ export const obtenerPerfilUsuarioConEstado = async (req, res) => {
     res.status(500).json({ error: "Error al obtener el perfil del usuario" });
   }
 };
+
+export const descargarRutina = async(req,res) => {
+
+  try {
+    const {id} = req.params;
+
+    const rutina = await Routine.findById(id)
+    if(!rutina) return res.status(204).json({error: "Rutina no encontrada"})
+
+      const filepath = path.join(process.cwd(), rutina.filepath)
+      if(!fs.existsSync(filepath)) return res.status(204).json({error: "Archivo no encontrado"})
+
+      res.download(filepath,rutina.filename,(err)=>{
+        if(err) return res.status(500).json({error: "Error al descargar el archivo"})
+      })
+
+  } catch (error) {
+    res.status(500).json({error:"Error interno del servidor"})
+  }
+
+}

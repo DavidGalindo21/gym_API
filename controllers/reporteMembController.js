@@ -103,7 +103,6 @@ doc.text(m.total.toFixed(2) || "-", 520, y);
   y += rowHeight;
   doc.font('Helvetica').fontSize(11);
 }
-
     }
 
     doc.end();

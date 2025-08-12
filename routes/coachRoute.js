@@ -28,7 +28,7 @@ const route = Router();
 // Rutas para el coach
 /**
  * @swagger
- * /coach/alumnos:
+ * /api/coach/alumnos:
  *   get:
  *     summary: Obtener los usuarios asignados al coach
  *     tags: [Coach]
@@ -45,7 +45,7 @@ const route = Router();
 route.get('/coach/alumnos', verificarToken,permitirRol('coach'),getUserCoach)
 /**
  * @swagger
- * /coach/actualizarPerfil:
+ * /api/coach/actualizarPerfil:
  *   put:
  *     summary: Actualizar el perfil 
  *     tags: [Coach]
@@ -63,7 +63,7 @@ route.put('/coach/:key/:value', verificarToken,permitirRol('coach'),actualizarUs
 
 /**
  * @swagger
- * /coach/{correo}/{valor}:
+ * /api/coach/rutina/{valor}:
  *   post:
  *     summary: Subir archivo PDF de rutina
  *     description: Permite al coach subir un archivo PDF de rutina para un usuario específico.     
@@ -91,7 +91,7 @@ route.post('/coach/rutina/:studentId', verificarToken, permitirRol('coach'), (re
 }, subirRutina);
 /**
  * @swagger
- * /coach/rutinas:
+ * /api/coach/rutinas:
  *   get:
  *     summary: Obtener las rutinas subidas por el coach y asignadas a sus estudiantes
  *     tags: [Coach]

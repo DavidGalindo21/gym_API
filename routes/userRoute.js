@@ -1,4 +1,4 @@
-import { actualizarUsuario, obtenerPerfilUsuarioConEstado, obtenerRutinasPorUsuario } from "../controllers/userController.js";
+import { actualizarUsuario, descargarRutina, obtenerPerfilUsuarioConEstado, obtenerRutinasPorUsuario } from "../controllers/userController.js";
 import { Router } from "express";
 import { verificarToken } from "../middlewares/authMiddleware.js";
 import { permitirRol } from "../middlewares/roleMiddleware.js";
@@ -6,7 +6,7 @@ import { permitirRol } from "../middlewares/roleMiddleware.js";
 const router = Router();
 /**
  * @swagger
- * /user/actualizar:
+ * /user/correo/{valor}:
  *   put:
  *     summary: Actualizar el perfil
  *     tags: [User]
@@ -34,7 +34,7 @@ router.put(
  * /user/rutinas:
  *   get:
  *     summary: Obtener las rutinas asignadas al usuario
- *     tags: [Usuario]
+ *     tags: [User]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -63,4 +63,21 @@ router.get("/user/rutinas", verificarToken, permitirRol("user"), obtenerRutinasP
  *         description: Error al obtener el perfil del usuario
  */
 router.get("/user/estado", verificarToken, permitirRol("user"), obtenerPerfilUsuarioConEstado);
+/**
+ * @swagger
+ * /user/descargar/{idDocumento}:
+ *   get:
+ *     summary: Descargar la rutina
+ *     tags: [User]
+ *     responses:
+ *       200:
+ *         description: El archivo fue descargado correctamente
+ *       204:
+ *        description: Se realizó la petición pero no se recibe una respuesta
+ *       404:
+ *         description: Rutina no encontrado
+ *       500:
+ *         description: Error al obtener la rutina
+ */
+router.get("/user/descargar/:id",verificarToken,permitirRol("user"),descargarRutina)
 export default router;

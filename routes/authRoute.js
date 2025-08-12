@@ -8,7 +8,7 @@ const router = Router()
 
 /**
  * @swagger
- * /admin/register:
+ * /api/admin/register:
  *   post:
  *     summary: Registrar un nuevo usuario
  *     tags: [Login]
@@ -25,19 +25,16 @@ const router = Router()
 router.post('/admin/register', verificarToken,permitirRol("admin"),register)
 /**
  * @swagger
- * /login:
+ * /api/login:
  *   post:
- *     summary: Inicio de sesión
+ *     summary: Login de usuario
  *     tags: [Login]
+ *     security: []   # <--- Esto desactiva la seguridad para esta ruta
  *     responses:
  *       200:
- *         description: Inicio de sesión exitoso
- *       204:
- *        description: Petición realizada con exito pero sin nada que devolver
- *       400:
- *        description: Usuario o contraseña incorrectos
- *       500:
- *         description: Error del servidor al iniciar sesión
+ *         description: Login exitoso
+ *       401:
+ *         description: Credenciales inválidas
  */
 router.post('/login', login)
 
