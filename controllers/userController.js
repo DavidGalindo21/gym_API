@@ -87,18 +87,31 @@ export const obtenerRutinasPorUsuario = async (req, res) => {
   try {
     const studentId = req.user.id;
 
-    const rutinas = await Routine.find({ studentId }).populate("coachId", "nombre correo");
+    const rutinas = await Routine.find({ studentId })
+      .populate("coachId", "nombre correo")
+      .select("filename fileUrl uploadedAt coachId");
 
     if (!rutinas || rutinas.length === 0) {
       return res.status(204).json({ message: "No se encontraron rutinas asignadas a este usuario" });
     }
 
-    res.status(200).json(rutinas);
+    // Formatear la respuesta para Android
+    const rutinasFormateadas = rutinas.map(rutina => ({
+      id: rutina._id,
+      filename: rutina.filename,
+      fileUrl: rutina.fileUrl,
+      uploadedAt: rutina.uploadedAt,
+      coach: rutina.coachId, // contiene nombre y correo
+    }));
+
+    res.status(200).json(rutinasFormateadas);
+
   } catch (error) {
     console.error("Error al obtener rutinas del usuario:", error);
     res.status(500).json({ error: "Error al obtener rutinas del usuario" });
   }
 };
+
 
 export const obtenerPerfilUsuarioConEstado = async (req, res) => {
   try {

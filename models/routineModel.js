@@ -19,6 +19,10 @@ const routineSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+   fileUrl: {   
+    type: String,
+    required: true,
+  },
   uploadedAt: {
     type: Date,
     default: Date.now,

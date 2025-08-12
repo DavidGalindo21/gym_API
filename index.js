@@ -29,6 +29,7 @@ app.use('/api', adminRoutes)
 app.use('/api', userRoutes)
 app.use('/api', route)
 app.use('/api', membresiasRouter)
+app.use('/uploads', express.static('uploads'))
 
 app.get('/users', (req, res) => {
     userModel.find().then(users => {

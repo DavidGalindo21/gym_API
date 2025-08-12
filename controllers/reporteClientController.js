@@ -68,25 +68,25 @@ export const generarReporteClientes = async (req, res) => {
     y += rowHeight;
     doc.font('Helvetica').fontSize(10);
 
-    for (const cliente of clientes) {
-      const membresia = await modeloMenmbresia
-        .findOne({ email: cliente.correo })
-        .sort({ fecha_pago: -1 });
+for (const cliente of clientes) {
+  const membresia = await modeloMenmbresia
+    .findOne({ user: cliente._id })
+    .sort({ fecha_pago: -1 });
 
-      let tipoMembresia = "-";
-      let estado = "Sin membresía";
+  let tipoMembresia = "-";
+  let estado = "Sin membresía";
 
-      if (membresia) {
-        const hoy = new Date();
-        estado = new Date(membresia.fecha_vencimiento) > hoy ? "Activo" : "Inactivo";
-        tipoMembresia = membresia.tipo_membresia;
-      }
+  if (membresia) {
+    const hoy = new Date();
+    estado = new Date(membresia.fecha_vencimiento) > hoy ? "Activo" : "Inactivo";
+    tipoMembresia = membresia.tipo_membresia;
+  }
 
-      doc.text(cliente.nombre || "-", 50, y);
-      doc.text(cliente.correo || "-", 150, y);
-      doc.text(cliente.telefono || "-", 270, y);
-      doc.text(tipoMembresia, 380, y);
-      doc.text(estado, 480, y);
+  doc.text(cliente.nombre || "-", 50, y);
+  doc.text(cliente.correo || "-", 150, y);
+  doc.text(cliente.telefono || "-", 270, y);
+  doc.text(tipoMembresia, 380, y);
+  doc.text(estado, 480, y);
 
       doc.moveTo(startX, y + rowHeight - 5).lineTo(pageWidth, y + rowHeight - 5).stroke();
       y += rowHeight;
