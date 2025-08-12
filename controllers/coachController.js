@@ -90,7 +90,6 @@ export const actualizarUsuario = async (req, res) => {
   }
 };
 
-
 export const subirRutina = async (req, res) => {
   try {
     const { studentId } = req.params;
@@ -105,11 +104,15 @@ export const subirRutina = async (req, res) => {
       return res.status(403).json({ error: "Cliente no asignado a este coach" });
     }
 
+    // Construir URL pública para el archivo PDF
+    const publicUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+
     const rutina = new Routine({
       coachId,
       studentId,
       filename: req.file.originalname,
       filepath: req.file.path,
+      fileUrl: publicUrl,
     });
 
     await rutina.save();
@@ -119,6 +122,7 @@ export const subirRutina = async (req, res) => {
     res.status(500).json({ error: "Error al subir la rutina" });
   }
 };
+
 
 export const obtenerRutinasPorCoach = async (req, res) => {
   try {
